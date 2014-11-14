@@ -1,0 +1,68 @@
+{
+  "data": [
+    {
+      "tags": [],
+      "text": "",
+      "created": "201411122019",
+      "modified": "201411122019",
+      "title": "HowMuch",
+      "modifier": "twee"
+    },
+    {
+      "tags": [],
+      "text": "",
+      "created": "201411122019",
+      "modified": "201411122019",
+      "title": "End",
+      "modifier": "twee"
+    },
+    {
+      "tags": [],
+      "text": "I’ve got a shipment of goods that never made it out of the docks.\n\nI need someone to go out and “convince” the dockmaster to release my property.\n\n<<if $reputation>>\nYou seem like just the type for this sort of thing.\n<<endif>>\n\n[[Why can’t you talk to him?|Why]]\n[[What’s it worth to you?|HowMuch]]",
+      "created": "201411122019",
+      "modified": "201411122019",
+      "title": "Description",
+      "modifier": "twee"
+    },
+    {
+      "tags": [],
+      "text": "",
+      "created": "201411122019",
+      "modified": "201411122019",
+      "title": "WhatSmuggle",
+      "modifier": "twee"
+    },
+    {
+      "tags": [],
+      "text": "I've got a job for you, if you're looking.\n\n[[Sure|Description]]\n[[Not right now|End]]",
+      "created": "201411122019",
+      "modified": "201411122019",
+      "title": "﻿:: Start",
+      "modifier": "twee"
+    },
+    {
+      "tags": [],
+      "text": "Anonymous",
+      "created": "201411122019",
+      "modified": "201411122019",
+      "title": "StoryAuthor",
+      "modifier": "twee"
+    },
+    {
+      "tags": [],
+      "text": "Untitled Story",
+      "created": "201411122019",
+      "modified": "201411122019",
+      "title": "StoryTitle",
+      "modifier": "twee"
+    },
+    {
+      "tags": [],
+      "text": "He’s hasn’t liked me since I reported him for smuggling.\n\n[[Really? What was he smuggling?|WhatSmuggle]]\n[[What’s it worth to you?|HowMuch]]",
+      "created": "201411122019",
+      "modified": "201411122019",
+      "title": "Why",
+      "modifier": "twee"
+    }
+  ]
+}
