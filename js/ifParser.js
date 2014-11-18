@@ -21,17 +21,23 @@ function getCondition(ifBlock) {
   return ifBlock.substring(5, ifClose);
 }
 
-function evaluateCondition(condition, context) {
-  condition = condition.replace(/ is/, ' ===');
+function parseCondition(condition) {
+  condition = condition.replace(/ is /, ' === ');
   condition = condition.replace(/\$/g, 'context.');
-  condition = 'return '.concat(condition);
 
-  var exec = new Function("context", condition);
+  return condition;
+}
+
+function evaluateCondition(condition, context) {
+  var innerCondition = 'return '.concat(condition);
+  var exec = new Function("context", innerCondition);
+
   return exec(context);
 }
 
 module.exports = { 
   parse: parse,
   _getCondition: getCondition,
+  _parseCondition: parseCondition,
   _evaluateCondition: evaluateCondition
 };
