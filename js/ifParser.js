@@ -22,9 +22,11 @@ function getCondition(ifBlock) {
 }
 
 function parseCondition(condition) {
-  condition = condition.replace(/ is /, ' === ');
   condition = condition.replace(/\$/g, 'context.');
+  var matches = condition.match(/('.*?'|".*?"|\S+)/g);
+  matches[1] = matches[1] === 'is' ? '===' : matches[1];
 
+  condition = matches.join(' ');
   return condition;
 }
 

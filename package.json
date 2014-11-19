@@ -4,7 +4,7 @@
   "description": "A plugin that integrates twine with phaser",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -C --recursive -R dot -b ./test"
+    "test": "mocha -C --recursive -R tap -b ./test"
   },
   "repository": {
     "type": "git",

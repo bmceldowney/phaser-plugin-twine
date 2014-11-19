@@ -42,8 +42,8 @@ describe('ifParser', function () {
       condition = "$isclauseis is $isclauseis";
       ifParser._parseCondition(condition).should.equal("context.isclauseis === context.isclauseis");
 
-      // condition = "$isclauseis neq 'this is my isclause'";
-      // ifParser._parseCondition(condition).should.equal("$isclauseis neq 'this is my isclause'");
+      condition = "$isclauseis neq 'this is my isclause'";
+      ifParser._parseCondition(condition).should.equal("context.isclauseis neq 'this is my isclause'");
     });
   });
 
