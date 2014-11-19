@@ -31,19 +31,34 @@ describe('ifParser', function () {
   describe('#_parseCondition', function () {
     it('should correctly parse "is"', function () {
       var condition = '$false is true';
-      ifParser._parseCondition(condition).should.equal('context.false === true');
+      ifParser._parseCondition(condition).should.equal('context.false == true');
 
       condition = '$value is 5';
-      ifParser._parseCondition(condition).should.equal('context.value === 5');
+      ifParser._parseCondition(condition).should.equal('context.value == 5');
 
       condition = "$isclauseis is 'this is the is clause'";
-      ifParser._parseCondition(condition).should.equal("context.isclauseis === 'this is the is clause'");
+      ifParser._parseCondition(condition).should.equal("context.isclauseis == 'this is the is clause'");
 
       condition = "$isclauseis is $isclauseis";
-      ifParser._parseCondition(condition).should.equal("context.isclauseis === context.isclauseis");
+      ifParser._parseCondition(condition).should.equal("context.isclauseis == context.isclauseis");
 
-      condition = "$isclauseis neq 'this is my isclause'";
-      ifParser._parseCondition(condition).should.equal("context.isclauseis neq 'this is my isclause'");
+      condition = "$isclauseis == 'this is my isclause'";
+      ifParser._parseCondition(condition).should.equal("context.isclauseis == 'this is my isclause'");
+    });
+
+    it('should correctly parse "neq"', function () {
+      var condition = '$neqClause neq "neq is soo uneqe"';
+      ifParser._parseCondition(condition).should.equal('context.neqClause != "neq is soo uneqe"');
+    });
+
+    it('should correctly parse "gt"', function () {
+      var condition = '$gtClause gt 5';
+      ifParser._parseCondition(condition).should.equal('context.gtClause > 5');
+    });
+
+    it('should correctly parse "lt"', function () {
+      var condition = '$ltClause lt 5';
+      ifParser._parseCondition(condition).should.equal('context.ltClause < 5');
     });
   });
 
