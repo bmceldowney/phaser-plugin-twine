@@ -1,0 +1,50 @@
+I’ve got a shipment of goods that never made it out of the docks.
+
+I need someone to go out and “convince” the dockmaster to release my property.
+
+<<if $reputation > 4>>
+You seem like just the type for this sort of thing.
+<<elseif $reputation < 0>>
+Or maybe I'm better off asking someone else...
+<<else>>
+I'm apprehensive, but willing to give you a try.
+<<endif>>
+
+[[Why can’t you talk to him?|Why]]
+[[What’s it worth to you?|HowMuch]]
+
+
+var data = {
+  string: "I’ve got a shipment of goods that never made it out of the docks.\n\nI need someone to go out and \“convince\” the dockmaster to release my property.\n\n<<if $reputation > 4>>\nYou seem like just the type for this sort of thing.\n<<elseif $reputation < 0>>\nOr maybe I'm better off asking someone else...\n<<else>>\nI'm apprehensive, but willing to give you a try.\n<<endif>>\n\n[[Why can’t you talk to him?|Why]]\n[[What’s it worth to you?|HowMuch]]\n",
+  macros: {
+    if: [
+      {
+        startIndex: 142,
+        endIndex: 348,
+        expression: "$reputation > 4",
+        else: [
+          {
+            startIndex: 211,
+            endIndex: 283,
+            expression: "$reputation < 0"
+          },
+          {
+            startIndex: 211,
+            endIndex: 283,
+            expression: undefined
+          }
+        ]
+      }
+    ]
+  },
+  links: [
+    {
+      displayText: "Why can’t you talk to him?",
+      location: "Why"
+    },
+    {
+      displayText: "What’s it worth to you?",
+      location: "HowMuch"
+    }
+  ]
+}
