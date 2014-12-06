@@ -1,26 +1,44 @@
-var openIfs = [];
-
 function analyze(string) {
   var story = string;
   var data = {
-    macros: {}
+    macros: []
   };
   var index = 0;
   var macro;
+  var openIfs = [];
+  var macroCollection;
 
   while (story[index] !== undefined) {
     if (story[index] === '<' && story[index + 1] === '<') {
       macro = lexMacro(story, index);
-      index = macro.endIndex;
+      parentMacro = openIfs[openIfs.length - 1];
+
+      if(macro.type === 'if') { 
+        openIfs.push(macro);
+      }
+
+      if(macro.type === 'else') {
+        if (!parentMacro.else) { parentMacro.else = [] }
+        parentMacro.else.push(macro);
+      }
+
+      if(macro.type === 'endif') { 
+        openIfs.pop().endIndex = macro.endIndex;
+      }
       
       if (macro.type !== 'endif' && macro.type !== 'else') {
-        if (!data.macros[macro.type]) { data.macros[macro.type] = [] }
+        if (parentMacro) {
+          if (!parentMacro.macros) { parentMacro.macros = [] }
+          macroCollection = parentMacro.macros;
+        } else {
+          macroCollection = data.macros;
+        }
 
-        data.macros[macro.type].push(macro);
+        macroCollection.push(macro);
       }
-    } else {
-      index++;
     }
+
+    index++;
   }
 
   return data;
@@ -30,7 +48,6 @@ function lexMacro(story, index) {
   var macro = {};
   var tokens;
   var endIndex;
-  var parentMacro;
 
   endIndex = story.indexOf('>', index);
   tokens = story.substring(index + 2, endIndex);
@@ -48,21 +65,6 @@ function lexMacro(story, index) {
   macro.expression = tokens.join(' ');
   macro.startIndex = index;
   macro.endIndex = endIndex + 1;
-
-  if(macro.type === 'if') { 
-    openIfs.push(macro);
-    macro.depth = openIfs.length;
-  }
-
-  if(macro.type === 'else') {
-    parentMacro = openIfs[openIfs.length - 1];
-    if (!parentMacro.else) { parentMacro.else = [] }
-    parentMacro.else.push(macro);
-  }
-
-  if(macro.type === 'endif') { 
-    openIfs.pop().endIndex = endIndex + 1;
-  }
 
   return macro;
 }

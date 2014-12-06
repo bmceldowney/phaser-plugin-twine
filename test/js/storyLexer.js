@@ -11,78 +11,78 @@ describe('storyLexer', function () {
 
   describe('#analyze', function () {
     it('should recognize the start of a macro', function () {
-      var story = "This is a test story with a <<if something is somethingElse>>, dogg <<endif>>";
+      var story = "a<<if b is c>>, d<<endif>>";
       var data = lexer.analyze(story);
-      data.macros['if'].length.should.equal(1);
-      data.macros['if'][0].type.should.equal('if');
-      data.macros['if'][0].expression.should.equal('something is somethingElse');
-      data.macros['if'][0].startIndex.should.equal(28);
-      data.macros['if'][0].endIndex.should.equal(76);
+      data.macros.length.should.equal(1);
+      data.macros[0].type.should.equal('if');
+      data.macros[0].expression.should.equal('b is c');
+      data.macros[0].startIndex.should.equal(1);
+      data.macros[0].endIndex.should.equal(25);
     });
 
-    it('should handle nested macros', function () {
-      var story = "This is a test story with a <<if something is somethingElse>>, dogg<<if nutz>> nutz<<endif>>!<<endif>>";
+    it('should handle nested macros', function should_handle_nested_macros() {
+      var story = "a<<if b is c>>, d<<if e>> f<<endif>><<endif>>";
       var data = lexer.analyze(story);
-      data.macros['if'].length.should.equal(2);
-      data.macros['if'][0].type.should.equal('if');
-      data.macros['if'][0].expression.should.equal('something is somethingElse');
-      data.macros['if'][0].depth.should.equal(1);
-      data.macros['if'][0].startIndex.should.equal(28);
-      data.macros['if'][0].endIndex.should.equal(101);
 
-      data.macros['if'][1].type.should.equal('if');
-      data.macros['if'][1].expression.should.equal('nutz');
-      data.macros['if'][1].depth.should.equal(2);
-      data.macros['if'][1].startIndex.should.equal(67);
-      data.macros['if'][1].endIndex.should.equal(91);
+      data.macros.length.should.equal(1);
+      data.macros[0].type.should.equal('if');
+      data.macros[0].expression.should.equal('b is c');
+      data.macros[0].startIndex.should.equal(1);
+      data.macros[0].endIndex.should.equal(44);
+
+      data.macros[0].macros.length.should.equal(1);
+      data.macros[0].macros[0].type.should.equal('if');
+      data.macros[0].macros[0].expression.should.equal('e');
+      data.macros[0].macros[0].startIndex.should.equal(17);
+      data.macros[0].macros[0].endIndex.should.equal(35);
     });
 
-    it('should handle else macros', function () {
-      var story = "This is a test story with a, <<if something is somethingElse>>dogg!<<else>>nutz!<<endif>>";
+    it('should handle else macros', function should_handle_else_macros() {
+      var story = "a<<if b is c>>d<<else>>e<<endif>>";
       var data = lexer.analyze(story);
-      data.macros['if'].length.should.equal(1);
-      data.macros['if'][0].type.should.equal('if');
-      data.macros['if'][0].expression.should.equal('something is somethingElse');
-      data.macros['if'][0].startIndex.should.equal(29);
-      data.macros['if'][0].endIndex.should.equal(88);
+      data.macros.length.should.equal(1);
+      data.macros[0].type.should.equal('if');
+      data.macros[0].expression.should.equal('b is c');
+      data.macros[0].startIndex.should.equal(1);
+      data.macros[0].endIndex.should.equal(32);
 
-      data.macros['if'][0].else.length.should.equal(1);
-      data.macros['if'][0].else[0].type.should.equal('else');
-      data.macros['if'][0].else[0].expression.should.equal('');
-      data.macros['if'][0].else[0].startIndex.should.equal(67);
-      data.macros['if'][0].else[0].endIndex.should.equal(74);
+      data.macros[0].else.length.should.equal(1);
+      data.macros[0].else[0].type.should.equal('else');
+      data.macros[0].else[0].expression.should.equal('');
+      data.macros[0].else[0].startIndex.should.equal(15);
+      data.macros[0].else[0].endIndex.should.equal(22);
     });
 
-    it('should handle else if macros', function () {
-      var story = "This is a test story with a, <<if something is somethingElse>>dogg!<<else if nutz neq 'real'>>nutz!<<endif>>";
+    it('should handle else if macros', function should_handle_else_if_macros() {
+      var story = "a<<if b is c>>d<<else if e neq 'f'>>g<<endif>>";
       var data = lexer.analyze(story);
-      data.macros['if'].length.should.equal(1);
-      data.macros['if'][0].type.should.equal('if');
-      data.macros['if'][0].expression.should.equal('something is somethingElse');
-      data.macros['if'][0].startIndex.should.equal(29);
-      data.macros['if'][0].endIndex.should.equal(107);
+      data.macros.length.should.equal(1);
+      data.macros[0].type.should.equal('if');
+      data.macros[0].expression.should.equal('b is c');
+      data.macros[0].startIndex.should.equal(1);
+      data.macros[0].endIndex.should.equal(45);
 
-      data.macros['if'][0].else.length.should.equal(1);
-      data.macros['if'][0].else[0].type.should.equal('else');
-      data.macros['if'][0].else[0].expression.should.equal("nutz neq 'real'");
-      data.macros['if'][0].else[0].startIndex.should.equal(67);
-      data.macros['if'][0].else[0].endIndex.should.equal(93);
+      data.macros[0].else.length.should.equal(1);
+      data.macros[0].else[0].type.should.equal('else');
+      data.macros[0].else[0].expression.should.equal("e neq 'f'");
+      data.macros[0].else[0].startIndex.should.equal(15);
+      data.macros[0].else[0].endIndex.should.equal(35);
     });
 
-    it('should handle elseif macros', function () {
-      var story = "This is a test story with a, <<if something is somethingElse>>dogg!<<elseif nutz neq 'real'>>nutz!<<endif>>";
+    it('should handle elseif macros', function should_handle_elseif_macros() {
+      var story = "a<<if b is c>>d<<elseif e neq 'f'>>g<<endif>>";
       var data = lexer.analyze(story);
-      data.macros['if'].length.should.equal(1);
-      data.macros['if'][0].type.should.equal('if');
-      data.macros['if'][0].expression.should.equal('something is somethingElse');
-      data.macros['if'][0].startIndex.should.equal(29);
-      data.macros['if'][0].endIndex.should.equal(106);
+      data.macros.length.should.equal(1);
+      data.macros[0].type.should.equal('if');
+      data.macros[0].expression.should.equal('b is c');
+      data.macros[0].startIndex.should.equal(1);
+      data.macros[0].endIndex.should.equal(44);
 
-      data.macros['if'][0].else.length.should.equal(1);
-      data.macros['if'][0].else[0].type.should.equal('else');
-      data.macros['if'][0].else[0].expression.should.equal("nutz neq 'real'");
-      data.macros['if'][0].else[0].startIndex.should.equal(67);
-      data.macros['if'][0].else[0].endIndex.should.equal(92);
+      data.macros[0].else.length.should.equal(1);
+      data.macros[0].else[0].type.should.equal('else');
+      data.macros[0].else[0].expression.should.equal("e neq 'f'");
+      data.macros[0].else[0].startIndex.should.equal(15);
+      data.macros[0].else[0].endIndex.should.equal(34);
     });
 
     it('should not add else and endif macros', function () {
