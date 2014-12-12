@@ -7,6 +7,43 @@ describe('ifParser', function () {
   var context;
 
   beforeEach(function () {
+    var data = {
+      lexedData: {
+        "macros":[
+        {
+          "type":"if",
+          "expression":"b is c",
+          "startIndex":1,
+          "endIndex":65,
+          "innerStartIndex":13,
+          "innerEndIndex":57,
+          "macros":[
+          {
+            "type":"if",
+            "expression":"e",
+            "startIndex":15,
+            "endIndex":56,
+            "innerStartIndex":22,
+            "innerEndIndex":48,
+            "else":[
+            {
+              "type":"else",
+              "expression":"g",
+              "startIndex":24,
+              "endIndex":35
+            },
+            {
+              "type":"else",
+              "expression":"",
+              "startIndex":37,
+              "endIndex":46
+            }]
+          }]
+        }]
+      },
+      originalString: "a<<if b is c>>d<<if e>>f<<elseif g>>h<<else>>j<<endif>><<endif>>"
+    };
+
     ifParser = require('../../js/ifParser.js');
     text = 'This is a test. <<if $conditional>>This is conditional text.<<endif>>';
     context = { '$conditional': false };

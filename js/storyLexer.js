@@ -7,6 +7,7 @@ function analyze(string) {
   var macro;
   var openIfs = [];
   var macroCollection;
+  var currentIf;
 
   while (story[index] !== undefined) {
     if (story[index] === '<' && story[index + 1] === '<') {
@@ -14,6 +15,7 @@ function analyze(string) {
       parentMacro = openIfs[openIfs.length - 1];
 
       if(macro.type === 'if') { 
+        macro.innerStartIndex = macro.endIndex;
         openIfs.push(macro);
       }
 
@@ -22,8 +24,10 @@ function analyze(string) {
         parentMacro.else.push(macro);
       }
 
-      if(macro.type === 'endif') { 
-        openIfs.pop().endIndex = macro.endIndex;
+      if(macro.type === 'endif') {
+        currentIf = openIfs.pop();
+        currentIf.innerEndIndex = macro.startIndex;
+        currentIf.endIndex = macro.endIndex;
       }
       
       if (macro.type !== 'endif' && macro.type !== 'else') {
