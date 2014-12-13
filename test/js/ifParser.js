@@ -45,70 +45,62 @@ describe('ifParser', function () {
     };
 
     ifParser = require('../../js/ifParser.js');
-    text = 'This is a test. <<if $conditional>>This is conditional text.<<endif>>';
-    context = { '$conditional': false };
   });
 
-  xdescribe('#parse', function () {
-    it('should remove text if conditional is false', function () {
-      var result = ifParser.parse(text, context);
-
-      result.should.equal('This is a test. ');
-    });
-  });
-  
-  describe('#_getCondition', function () {
-    it('should return the condition of the if block', function () {
-      var ifBlock = '<<if $condition is true>>SOme text is in here.<<endif>>';
-      var condition = ifParser._getCondition(ifBlock);
-      condition.should.equal('$condition is true');
-    });
-  });
-
-  describe('#_parseCondition', function () {
+  describe('#_parseExpression', function () {
     it('should correctly parse "is"', function () {
-      var condition = '$false is true';
-      ifParser._parseCondition(condition).should.equal('context.false == true');
+      var expression = '$false is true';
+      ifParser._parseExpression(expression).should.equal('context.false == true');
 
-      condition = '$value is 5';
-      ifParser._parseCondition(condition).should.equal('context.value == 5');
+      expression = '$value is 5';
+      ifParser._parseExpression(expression).should.equal('context.value == 5');
 
-      condition = "$isclauseis is 'this is the is clause'";
-      ifParser._parseCondition(condition).should.equal("context.isclauseis == 'this is the is clause'");
+      expression = "$isclauseis is 'this is the is clause'";
+      ifParser._parseExpression(expression).should.equal("context.isclauseis == 'this is the is clause'");
 
-      condition = "$isclauseis is $isclauseis";
-      ifParser._parseCondition(condition).should.equal("context.isclauseis == context.isclauseis");
+      expression = "$isclauseis is $isclauseis";
+      ifParser._parseExpression(expression).should.equal("context.isclauseis == context.isclauseis");
 
-      condition = "$isclauseis == 'this is my isclause'";
-      ifParser._parseCondition(condition).should.equal("context.isclauseis == 'this is my isclause'");
+      expression = "$isclauseis == 'this is my isclause'";
+      ifParser._parseExpression(expression).should.equal("context.isclauseis == 'this is my isclause'");
     });
 
     it('should correctly parse "neq"', function () {
-      var condition = '$neqClause neq "neq is soo uneqe"';
-      ifParser._parseCondition(condition).should.equal('context.neqClause != "neq is soo uneqe"');
+      var expression = '$neqClause neq "neq is soo uneqe"';
+      ifParser._parseExpression(expression).should.equal('context.neqClause != "neq is soo uneqe"');
     });
 
     it('should correctly parse "gt"', function () {
-      var condition = '$gtClause gt 5';
-      ifParser._parseCondition(condition).should.equal('context.gtClause > 5');
+      var expression = '$gtClause gt 5';
+      ifParser._parseExpression(expression).should.equal('context.gtClause > 5');
     });
 
     it('should correctly parse "lt"', function () {
-      var condition = '$ltClause lt 5';
-      ifParser._parseCondition(condition).should.equal('context.ltClause < 5');
+      var expression = '$ltClause lt 5';
+      ifParser._parseExpression(expression).should.equal('context.ltClause < 5');
+    });
+
+    it('should correctly parse "and"', function () {
+      var expression = '$value is "this and that" and $ltClause lt 5';
+      ifParser._parseExpression(expression).should.equal('context.value == "this and that" && context.ltClause < 5');
+    });
+
+    it('should correctly parse "or"', function () {
+      var expression = '$value is "this or that" or $ltClause lt 5';
+      ifParser._parseExpression(expression).should.equal('context.value == "this or that" || context.ltClause < 5');
     });
   });
 
-  describe('#_evaluateCondition', function () {
-    it('should evaluate a string condition', function () {
+  describe('#_evaluateExpression', function () {
+    it('should evaluate a string expression', function () {
       var context = {
         'false': false,
         'value': 5,
         'isclauseis': 'this is the is clause'
       };
 
-      var condition = "context.isclauseis === 'this is the is clause'";
-      ifParser._evaluateCondition(condition, context).should.equal(true);
+      var expression = "context.isclauseis === 'this is the is clause'";
+      ifParser._evaluateExpression(expression, context).should.equal(true);
     });
   });
 });
