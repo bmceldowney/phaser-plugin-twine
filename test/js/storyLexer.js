@@ -18,8 +18,10 @@ describe('storyLexer', function () {
       data.macros[0].expression.should.equal('b is c');
       data.macros[0].startIndex.should.equal(1);
       data.macros[0].endIndex.should.equal(25);
-      data.macros[0].innerStartIndex.should.equal(13);      
+      data.macros[0].innerStartIndex.should.equal(13);
       data.macros[0].innerEndIndex.should.equal(17);
+      data.macros[0].contentStart.should.equal(13);
+      data.macros[0].content.should.equal(', d');
     });
 
     it('should handle nested macros', function should_handle_nested_macros() {
@@ -31,12 +33,14 @@ describe('storyLexer', function () {
       data.macros[0].expression.should.equal('b is c');
       data.macros[0].startIndex.should.equal(1);
       data.macros[0].endIndex.should.equal(44);
+      data.macros[0].content.should.equal(', d<<0>>');
 
       data.macros[0].macros.length.should.equal(1);
       data.macros[0].macros[0].type.should.equal('if');
       data.macros[0].macros[0].expression.should.equal('e');
       data.macros[0].macros[0].startIndex.should.equal(17);
       data.macros[0].macros[0].endIndex.should.equal(35);
+      data.macros[0].macros[0].content.should.equal(' f');      
     });
 
     it('should handle else macros', function should_handle_else_macros() {

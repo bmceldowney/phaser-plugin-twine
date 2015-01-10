@@ -4,10 +4,11 @@ function analyze(string) {
     macros: []
   };
   var index = 0;
-  var macro;
+  var macro, parentMacro;
   var openIfs = [];
   var macroCollection;
   var currentIf;
+  var tempContent;
 
   while (story[index] !== undefined) {
     if (story[index] === '<' && story[index + 1] === '<') {
@@ -26,8 +27,25 @@ function analyze(string) {
 
       if(macro.type === 'endif') {
         currentIf = openIfs.pop();
+
+        currentIf.content = story.slice(currentIf.endIndex + 1, macro.startIndex);
+
         currentIf.innerEndIndex = macro.startIndex;
+        currentIf.contentStart = currentIf.endIndex;
         currentIf.endIndex = macro.endIndex;
+
+        if (parentMacro) {
+          var offsetStart = macro.startIndex - parentMacro.contentStart;
+          var offsetEnd = macro.endIndex - parentMacro.contentStart;
+
+          tempContent = parentMacro.content.slice(0, offsetStart) +
+                '<<' + 0
+                //(parentMacro.macros.length - 1) +
+                '>>' +
+                parentMacro.content.slice(offsetEnd, parentMacro.content.length - 1);
+
+          parentMacro.content = tempContent;
+        };
       }
       
       if (macro.type !== 'endif' && macro.type !== 'else') {
@@ -39,7 +57,7 @@ function analyze(string) {
         }
 
         macroCollection.push(macro);
-      }
+      }      
     }
 
     index++;
