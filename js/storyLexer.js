@@ -1,18 +1,24 @@
+//some dirty, dirty state
+var openIfs;
+
 function analyze(string) {
-  var story = string;
   var data = {
-    macros: []
+    macros: [],
+    content: string
   };
-  var index = 0;
   var macro, parentMacro;
-  var openIfs = [];
   var macroCollection;
   var currentIf;
-  var tempContent;
 
-  while (story[index] !== undefined) {
-    if (story[index] === '<' && story[index + 1] === '<') {
-      macro = lexMacro(story, index);
+  openIfs = [];
+
+  for (var index = 0; index < data.content.length; index++) {
+    if (data.content[index] === '<' && data.content[index + 1] === '<') {
+      if (macro && (macro.type === 'if' || macro.type === 'else')) {
+        macro.content = data.content.slice(macro.endIndex + 1, index);
+      }
+
+      macro = lexMacro(data.content, index);
       parentMacro = openIfs[openIfs.length - 1];
 
       if(macro.type === 'if') { 
@@ -28,24 +34,11 @@ function analyze(string) {
       if(macro.type === 'endif') {
         currentIf = openIfs.pop();
 
-        currentIf.content = story.slice(currentIf.endIndex + 1, macro.startIndex);
-
         currentIf.innerEndIndex = macro.startIndex;
         currentIf.contentStart = currentIf.endIndex;
         currentIf.endIndex = macro.endIndex;
 
-        if (parentMacro) {
-          var offsetStart = macro.startIndex - parentMacro.contentStart;
-          var offsetEnd = macro.endIndex - parentMacro.contentStart;
-
-          tempContent = parentMacro.content.slice(0, offsetStart) +
-                '<<' + 0
-                //(parentMacro.macros.length - 1) +
-                '>>' +
-                parentMacro.content.slice(offsetEnd, parentMacro.content.length - 1);
-
-          parentMacro.content = tempContent;
-        };
+        closeIf(currentIf);
       }
       
       if (macro.type !== 'endif' && macro.type !== 'else') {
@@ -59,19 +52,39 @@ function analyze(string) {
         macroCollection.push(macro);
       }      
     }
-
-    index++;
   }
+
+  data.contentStart = -1;
+  closeIf(data);
 
   return data;
 }
+
+function closeIf (currentIf) {
+  var tempContent;
+  var child;
+
+  if (!currentIf.macros) { return; }
+
+  for (var i = currentIf.macros.length - 1; i >= 0; i--) {
+    child = currentIf.macros[i]
+    var offsetStart = child.startIndex - currentIf.contentStart;
+    var offsetEnd = child.endIndex - currentIf.contentStart;
+
+    tempContent = currentIf.content.slice(0, offsetStart - 1) +
+          '<<' + i + '>>' +
+          currentIf.content.slice(offsetEnd, currentIf.content.length);
+
+    currentIf.content = tempContent;
+  };
+};
 
 function lexMacro(story, index) {
   var macro = {};
   var tokens;
   var endIndex;
 
-  endIndex = story.indexOf('>', index);
+  endIndex = story.indexOf('>>', index);
   tokens = story.substring(index + 2, endIndex);
   tokens = tokens.split(' ');
   macro.type = tokens.shift();
@@ -95,5 +108,6 @@ module.exports = {
   analyze: analyze,
 
   //for TDD
-  _lexMacro: lexMacro
+  _lexMacro: lexMacro,
+  _closeIf : closeIf
 }
