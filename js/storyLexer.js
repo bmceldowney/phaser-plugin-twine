@@ -1,59 +1,57 @@
-function analyze(string) {
-  var story = string;
-  var data = {
-    macros: []
-  };
-  var index = 0;
-  var macro;
-  var openIfs = [];
-  var macroCollection;
-  var currentIf;
+var Macro = require('./models/Macro')
 
-  while (story[index] !== undefined) {
-    if (story[index] === '<' && story[index + 1] === '<') {
-      macro = lexMacro(story, index);
-      parentMacro = openIfs[openIfs.length - 1];
+function analyze(string) {
+  var data = {};
+  var macro, parentMacro;
+  var macroStack = [];
+
+  data.macros = [];
+  data.content = string;
+  
+  for (var index = 0; index < data.content.length; index++) {
+    if (data.content[index] === '<' && data.content[index + 1] === '<') {
+      macro && macro.setContent(data.content.slice(macro.endIndex + 1, index));
+
+      macro = lexMacro(data.content, index);
+      parentMacro = macroStack[macroStack.length - 1];
 
       if(macro.type === 'if') { 
         macro.innerStartIndex = macro.endIndex;
-        openIfs.push(macro);
+        macroStack.push(macro);
       }
 
       if(macro.type === 'else') {
-        if (!parentMacro.else) { parentMacro.else = [] }
         parentMacro.else.push(macro);
       }
 
       if(macro.type === 'endif') {
-        currentIf = openIfs.pop();
-        currentIf.innerEndIndex = macro.startIndex;
-        currentIf.endIndex = macro.endIndex;
+        macroStack.pop();
+
+        parentMacro.contentStart = parentMacro.endIndex;
+        parentMacro.endIndex = macro.endIndex;
+        parentMacro.convertContent();
       }
       
       if (macro.type !== 'endif' && macro.type !== 'else') {
-        if (parentMacro) {
-          if (!parentMacro.macros) { parentMacro.macros = [] }
-          macroCollection = parentMacro.macros;
-        } else {
-          macroCollection = data.macros;
-        }
-
-        macroCollection.push(macro);
+        if (!parentMacro) { parentMacro = data; }
+        parentMacro.macros.push(macro);
       }
     }
-
-    index++;
   }
+
+  data.contentStart = -1;
+  Macro.convertContent.call(data);
 
   return data;
 }
 
 function lexMacro(story, index) {
-  var macro = {};
+  var macro = Object.create(Macro);
   var tokens;
   var endIndex;
 
-  endIndex = story.indexOf('>', index);
+  macro.init();
+  endIndex = story.indexOf('>>', index);
   tokens = story.substring(index + 2, endIndex);
   tokens = tokens.split(' ');
   macro.type = tokens.shift();
@@ -75,7 +73,5 @@ function lexMacro(story, index) {
 
 module.exports = {
   analyze: analyze,
-
-  //for TDD
-  _lexMacro: lexMacro
+  lexMacro: lexMacro,
 }
