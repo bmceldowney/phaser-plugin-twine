@@ -1,6 +1,7 @@
 module.exports = {
 	init: function () {
 		this.macros = [];
+		this.links = [];
 		this.else = [];
 	},
 
@@ -11,8 +12,9 @@ module.exports = {
 	convertContent: function () {
 	  var tempContent;
 	  var macro;
-
-	  if (!this.macros) { return; }
+	  var linkCount = 0;
+	  var linkRegEx = /\[\[(.*?)\]\]/g;
+	  var self = this;
 
 	  for (var i = this.macros.length - 1; i >= 0; i--) {
 	    macro = this.macros[i]
@@ -25,5 +27,9 @@ module.exports = {
 
 	    this.content = tempContent;
 	  };
+
+	  this.content = this.content.replace(linkRegEx, function () {
+	  	return '[[' + linkCount++ + ']]'; 
+	  })
 	}
 }

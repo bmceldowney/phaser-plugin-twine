@@ -91,7 +91,36 @@ describe('storyLexer', function () {
       should.not.exist(data.macros['endif']);
       should.not.exist(data.macros['else']);
     });
+
+    it('should handle links', function () {
+      var story = "a<<if b is c>>d<<elseif e>>f<<endif>>[[link|location]]";
+      var data = lexer.analyze(story);
+
+      data.links.length.should.equal(1);
+      data.links[0].text.should.equal('link');
+      data.links[0].target.should.equal('location');
+    });
   });
+
+  describe('#lexLink', function () {
+    it('should return a valid link object', function () {
+      var story = "This is a story with a [[link|target]] and another [[link2]]";
+      var index = 23;
+
+      var link = lexer.lexLink(story, index);
+      link.startIndex.should.equal(23);
+      link.endIndex.should.equal(37);
+      link.text.should.equal('link');
+      link.target.should.equal('target');
+
+      index = 51;
+      link = lexer.lexLink(story, index);
+      link.startIndex.should.equal(51);
+      link.endIndex.should.equal(59);
+      link.text.should.equal('link2');
+      link.target.should.equal('link2');
+    })
+  })
 
   describe('#lexMacro', function () {
     it('should lex some stuff', function () {
@@ -107,7 +136,7 @@ describe('storyLexer', function () {
     })
   });
 
-  xdescribe('--> PRINT', function temp() {
+  describe('--> PRINT', function temp() {
     it('OUT -->', function () {
       var data = "This content<<if $reputation > 4>>\nYou seem like just the type for this sort of thing.\n<<elseif $reputation < 0>>\nOr maybe I'm better off asking someone else...\n<<else>>\nI'm apprehensive, but willing to give you a try.\n<<endif>>\n\n[[Why can’t you talk to him?|Why]]\n[[What’s it worth to you?|HowMuch]]\n";
       var lex = lexer.analyze(data);

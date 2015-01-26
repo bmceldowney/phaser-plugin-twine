@@ -12,10 +12,29 @@ describe('Macro', function () {
 
   describe('convertContent', function () {
     var currentIf;
-    var data = 'a<<if b is c>>, d<<if e>> f<<endif>> bah <<if anotherThing>>then some other stuff<<endif>><<endif>>';
 
     beforeEach(function () {
-    	macro.content = ', d<<if e>> f<<endif>> bah <<if anotherThing>>then some other stuff<<endif>>';
+    });
+
+    it('should replace link content with the link text', function () {
+      macro.content = ', d [[a link|link1]] and [[link2]]';
+      macro.contentStart = 0;
+      macro.links = [{
+          startIndex: 4,
+          endIndex: 20,
+          text: 'a link'
+        },{
+          startIndex: 25,
+          endIndex: 33,
+          text: 'link2'
+        }]
+
+      macro.convertContent();
+      macro.content.should.equal(', d [[0]] and [[1]]');
+    });
+
+    it('should replace macro content with placeholders', function () {
+      macro.content = ', d<<if e>> f<<endif>> bah <<if anotherThing>>then some other stuff<<endif>>';
       macro.contentStart = 13;
       macro.macros = [{
           startIndex: 17,
@@ -24,9 +43,7 @@ describe('Macro', function () {
           startIndex: 41,
           endIndex: 89
         }]
-    });
 
-    it('should replace macro content with placeholders', function () {
       macro.convertContent();
       macro.content.should.equal(', d<<0>> bah <<1>>');
     });
