@@ -1,15 +1,23 @@
 /*jshint -W054 */ // I know Function is a form of eval
-function parse(text, context) {
-  var ifIndex;
-  var endIfIndex;
-  var ifBlock;
+function parse(macro, context) {
+  var elseIndex = 0;
+  var retval = '';
+  var expression;
+
+  expression = parseExpression(macro.expression);
+  retval = evaluateExpression(expression, context) ? macro.content : '';
+
+  if (retval !== '') { return retval; }
   
-  ifIndex = text.indexOf('<<if');
+  while (elseIndex < macro.else.length && retval === '') {
+    expression = parseExpression(macro.else[elseIndex].expression);
+    retval = evaluateExpression(expression, context) ? macro.else[elseIndex].content : '';
+    if (retval !== '') { return retval; }
+    
+    elseIndex++;
+  }
 
-  if (ifIndex === -1) { return; }
-
-  endIfIndex = text.lastIndexOf('<<endif');
-  ifBlock = text.substring(ifIndex, endIfIndex + 9);
+  return retval;
 }
 
 function parseExpression(expression) {
@@ -24,6 +32,8 @@ function parseExpression(expression) {
 
   expression = expression.replace(/\$/g, 'context.');
   var matches = expression.match(/('.*?'|".*?"|\S+)/g);
+  if (!matches) { return true; } // no expression, let it pass
+
   for (var i = 0; i < matches.length; i++) {
     matches[i] = operatorMap[matches[i]] || matches[i];
   }

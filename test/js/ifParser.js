@@ -5,46 +5,62 @@ describe('ifParser', function () {
   var ifParser;
   var text;
   var context;
+  var macro;
 
   beforeEach(function () {
-    var data = {
-      lexedData: {
-        "macros":[
+    macro = {
+      "type": "if",
+      "expression": "$reputation > 4",
+      "startIndex": 12,
+      "endIndex": 227,
+      "innerStartIndex": 33,
+      "content": "\nYou seem like just the type for this sort of thing.\n",
+      "contentStart": 33,
+      "macros": [],
+      "links": [],
+      "else": [
         {
-          "type":"if",
-          "expression":"b is c",
-          "startIndex":1,
-          "endIndex":65,
-          "innerStartIndex":13,
-          "innerEndIndex":57,
-          "macros":[
-          {
-            "type":"if",
-            "expression":"e",
-            "startIndex":15,
-            "endIndex":56,
-            "innerStartIndex":22,
-            "innerEndIndex":48,
-            "else":[
-            {
-              "type":"else",
-              "expression":"g",
-              "startIndex":24,
-              "endIndex":35
-            },
-            {
-              "type":"else",
-              "expression":"",
-              "startIndex":37,
-              "endIndex":46
-            }]
-          }]
-        }]
-      },
-      originalString: "a<<if b is c>>d<<if e>>f<<elseif g>>h<<else>>j<<endif>><<endif>>"
-    };
-
+          "macros": [],
+          "links": [],
+          "else": [],
+          "type": "else",
+          "expression": "$reputation < 0",
+          "startIndex": 87,
+          "endIndex": 112,
+          "content": "\nOr maybe I'm better off asking someone else...\n"
+        },
+        {
+          "macros": [],
+          "links": [],
+          "else": [],
+          "type": "else",
+          "expression": "$reputation == 3",
+          "startIndex": 161,
+          "endIndex": 168,
+          "content": "\nI'm apprehensive, but willing to give you a try.\n"
+        }
+      ]
+    }
     ifParser = require('../../js/ifParser.js');
+  });
+
+  describe('#parse', function () {
+    it('should correctly parse a macro object', function () {
+      var context = {
+        reputation: -1
+      };
+
+      ifParser.parse(macro, context).should.equal(macro.else[0].content);;
+
+      context.reputation = 3;
+      ifParser.parse(macro, context).should.equal(macro.else[1].content);;
+
+      context.reputation = 5;
+      ifParser.parse(macro, context).should.equal(macro.content);;
+ 
+      context.reputation = 2;
+      ifParser.parse(macro, context).should.equal('');;
+    });
   });
 
   describe('#_parseExpression', function () {

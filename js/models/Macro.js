@@ -3,6 +3,11 @@ module.exports = {
 		this.macros = [];
 		this.links = [];
 		this.else = [];
+		this.expression = '';
+	  this.startIndex = 0;
+  	this.endIndex = 0;
+  	this.type = '';
+  	this.content = '';
 	},
 
   setContent: function (content) {

@@ -4,7 +4,8 @@
   "description": "A plugin that integrates twine with phaser",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -C --recursive -R tap -b ./test"
+    "test": "mocha -C --recursive -R tap -b ./test",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- -C --recursive -R tap -b ./test"
   },
   "repository": {
     "type": "git",
@@ -18,6 +19,8 @@
   "homepage": "https://github.com/bmceldowney/phaser-plugin-twine",
   "devDependencies": {
     "chai": "^1.10.0",
-    "mocha": "^2.0.1"
+    "istanbul": "^0.3.13",
+    "mocha": "^2.0.1",
+    "rewire": "^2.3.1"
   }
 }

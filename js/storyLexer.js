@@ -10,7 +10,7 @@ function analyze(string) {
   data.macros = [];
   data.links = [];
   data.content = string;
-  
+
   for (var index = 0; index < data.content.length; index++) {
     parentMacro = macroStack[macroStack.length - 1];
     if (!parentMacro) { parentMacro = data; }
@@ -32,9 +32,14 @@ function analyze(string) {
 
       if(macro.type === 'endif') {
         macroStack.pop();
-
+        
         parentMacro.contentStart = parentMacro.endIndex;
         parentMacro.endIndex = macro.endIndex;
+
+        if (!parentMacro.else.length) {
+          parentMacro.setContent(data.content.slice(parentMacro.contentStart + 1, macro.startIndex));
+        };
+
         parentMacro.convertContent();
       }
       
@@ -52,6 +57,26 @@ function analyze(string) {
 
   data.contentStart = -1;
   Macro.convertContent.call(data);
+
+  return cleanUp(data);
+}
+
+function cleanUp (data) {
+  data.macros.forEach(function (macro) {
+    cleanUp(macro);
+  });
+
+  delete data.innerStartIndex;
+  delete data.startIndex;
+  delete data.endIndex;
+  delete data.contentStart;
+
+  data.links.forEach(function (link) {
+    delete link.innerStartIndex;
+    delete link.startIndex;
+    delete link.endIndex;
+    delete link.contentStart;
+  });
 
   return data;
 }
@@ -102,5 +127,6 @@ function lexMacro(story, index) {
 module.exports = {
   analyze: analyze,
   lexMacro: lexMacro,
-  lexLink: lexLink
+  lexLink: lexLink,
+  cleanUp: cleanUp
 }

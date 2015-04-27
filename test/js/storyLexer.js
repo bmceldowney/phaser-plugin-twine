@@ -19,13 +19,13 @@ describe('storyLexer', function () {
     });
 
     it('should handle nested macros', function should_handle_nested_macros() {
-      var story = "a <<if b is c>>, d <<if e>> f<<endif>><<endif>> thing happened <<if aThing>> blarve <<endif>> this too";
+      var story = "a <<if b is c>>, d <<if e>> f<<endif>>blartfast on the belfry<<endif>> thing happened <<if aThing>> blarve <<endif>> this too";
       var data = lexer.analyze(story);
 
       data.macros.length.should.equal(2);
       data.macros[0].type.should.equal('if');
       data.macros[0].expression.should.equal('b is c');
-      data.macros[0].content.should.equal(', d <<0>>');
+      data.macros[0].content.should.equal(', d <<0>>blartfast on the belfry');
 
       data.macros[0].macros.length.should.equal(1);
       data.macros[0].macros[0].type.should.equal('if');
@@ -36,17 +36,21 @@ describe('storyLexer', function () {
     });
 
     it('should handle else macros', function should_handle_else_macros() {
-      var story = "a<<if b is c>>d<<else>>e<<endif>>";
+      var story = "the new start <<if blart>>a<<if b is c>>d<<else>>e<<endif>> and some text<<endif>>";
       var data = lexer.analyze(story);
       data.macros.length.should.equal(1);
       data.macros[0].type.should.equal('if');
-      data.macros[0].expression.should.equal('b is c');
-      data.macros[0].content.should.equal('d');
+      data.macros[0].expression.should.equal('blart');
+      data.macros[0].content.should.equal('a<<0>> and some text');
 
-      data.macros[0].else.length.should.equal(1);
-      data.macros[0].else[0].type.should.equal('else');
-      data.macros[0].else[0].expression.should.equal('');
-      data.macros[0].else[0].content.should.equal('e');
+      data.macros[0].macros[0].type.should.equal('if');
+      data.macros[0].macros[0].expression.should.equal('b is c');
+      data.macros[0].macros[0].content.should.equal('d');
+
+      data.macros[0].macros[0].else.length.should.equal(1);
+      data.macros[0].macros[0].else[0].type.should.equal('else');
+      data.macros[0].macros[0].else[0].expression.should.equal('');
+      data.macros[0].macros[0].else[0].content.should.equal('e');
     });
 
     it('should handle else if macros', function should_handle_else_if_macros() {
@@ -136,9 +140,23 @@ describe('storyLexer', function () {
     })
   });
 
-  describe('--> PRINT', function temp() {
+  describe('#cleanUp', function () {
+    it('should get rid of any non-essential properties', function () {
+      var data = "This content<<if $spotty is 'bockchoy'>><<if $reputation > 4>>\nYou seem like just the type for this sort of thing.\n<<elseif $reputation < 0>>\nOr maybe I'm better off asking someone else...\n<<else>>\nI'm apprehensive, but willing to give you a try.\n<<endif>>This bockchoy is not NEARLY spotty enough.<<endif>>\n\n[[Why can’t you talk to him?|Why]]\n[[What’s it worth to you?|HowMuch]]\n";
+      var lex = lexer.analyze(data);
+      var clean = lexer.cleanUp(lex);
+
+      clean.macros.forEach(function (macro) {
+        should.not.exist(macro.startIndex);
+        should.not.exist(macro.endIndex);
+        should.not.exist(macro.contentStart);
+      });
+    });
+  })
+
+  xdescribe('--> PRINT', function temp() {
     it('OUT -->', function () {
-      var data = "This content<<if $reputation > 4>>\nYou seem like just the type for this sort of thing.\n<<elseif $reputation < 0>>\nOr maybe I'm better off asking someone else...\n<<else>>\nI'm apprehensive, but willing to give you a try.\n<<endif>>\n\n[[Why can’t you talk to him?|Why]]\n[[What’s it worth to you?|HowMuch]]\n";
+      var data = "This content<<if $spotty is 'bockchoy'>><<if $reputation > 4>>\nYou seem like just the type for this sort of thing.\n<<elseif $reputation < 0>>\nOr maybe I'm better off asking someone else...\n<<else>>\nI'm apprehensive, but willing to give you a try.\n<<endif>>This bockchoy is not NEARLY spotty enough.<<endif>>\n\n[[Why can’t you talk to him?|Why]]\n[[What’s it worth to you?|HowMuch]]\n";
       var lex = lexer.analyze(data);
 
       console.log(JSON.stringify(lex));

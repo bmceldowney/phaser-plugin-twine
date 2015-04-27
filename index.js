@@ -1,23 +1,13 @@
-function Story(storyData, context) {
-  this._data = this._buildDictionary(storyData.data);
-  this._context = context;
+var fs = require('fs');
+var app = require('./js/app');
+
+if (process.argv.length < 3) {
+  console.log('Usage: node ' + process.argv[1] + ' FILENAME');
+  process.exit(1);
 }
 
-var story = Story.prototype;
+var filename = process.argv[2];
+var rawData = fs.readFileSync(filename, 'utf8');
+var data = app.processRawData(rawData);
 
-story._buildDictionary = function (data) {
-  var dictionary = {};
-
-  for (var i = 0; i < data.length; i++) {
-    if (data[i].title.indexOf('::') !== -1) { data[i].title = data[i].title.replace("﻿:: ", ''); }
-    dictionary[data[i].title.toString()] = data[i];
-  }
-
-  return dictionary;
-};
-
-story._parseText = function (text) {
-  
-};
-
-module.exports = Story;
+console.log(JSON.stringify(data));

@@ -1,0 +1,53 @@
+﻿:: Start
+<<set $perceptive = true>>
+Walking along in the woods, you spy something out of the corner of your eye. <<if $perceptive>>You're pretty certain it's someone following you.<<endif>>
+
+[[Investigate.|investigate]]
+[[Ignore it and keep moving.|end]]
+<<if $perceptive>>[[Shout out to whoever it is.|shout]]
+[[Pretend to ignore them and keep moving, but be ready for action|action oriented stuff [rigth>>]]<<endif>>
+
+
+:: action oriented stuff rigth>> [thisTestTag anotherTag this tag [tag] <tag>]
+Your hand moved subtly toward your weapon as you nonchalantly continue along the path. Suddenly two ruffians leap from behind a large shrub.
+
+[[Draw your weapon and attack before they know what's happening.|fight]]
+[[Push past them and run as quickly as you can|run]]
+
+
+:: shout
+
+
+
+:: StoryTitle
+Untitled Story
+
+
+:: investigate
+It's a trap! You find yourself surrounded by two rough looking gentlemen.
+
+[[Draw your weapon and get ready to fight.|fight]]
+[[Attempt to appeal to their better natures.|talk]]
+[[Try to distract them so you can run.|run]]
+
+
+:: run
+
+
+
+:: StoryAuthor
+Anonymous
+
+
+:: end
+
+
+
+:: talk
+
+
+
+:: fight
+
+
+
