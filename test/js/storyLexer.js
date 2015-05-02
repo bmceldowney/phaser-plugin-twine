@@ -104,6 +104,45 @@ describe('storyLexer', function () {
       data.links[0].text.should.equal('link');
       data.links[0].target.should.equal('location');
     });
+
+    it('should handle set macros', function () {
+      var story = 'this is some <<set $reputation = 4>>text.<<if $reputation>> You rock.<<endif>>'
+      var data = lexer.analyze(story);
+
+      data.macros[0].type.should.equal('set');
+      data.macros[0].expression.should.equal('$reputation = 4');
+      data.macros[0].content.should.equal('');
+
+      data.macros[1].type.should.equal('if');
+      data.macros[1].expression.should.equal('$reputation');
+      data.macros[1].content.should.equal(' You rock.');
+
+      data.content.should.equal('this is some <<0>>text.<<1>>');
+    });
+
+    it('should handle set macros at the beginning of a passage', function () {
+      var story = '<<set $started = true>>\nHere is the start.\n[[Go on.|go]]';
+      var data = lexer.analyze(story);
+
+      data.macros[0].type.should.equal('set');
+      data.macros[0].expression.should.equal('$started = true');
+      data.macros[0].content.should.equal('');
+    })
+
+    it('should handle nested set macros', function () {
+      var story = 'this is some text.<<if $reputation>> You<<set $reputation = 4>> rock.<<endif>>'
+      var data = lexer.analyze(story);
+
+      data.macros[0].type.should.equal('if');
+      data.macros[0].expression.should.equal('$reputation');
+      data.macros[0].content.should.equal(' You<<0>> rock.');
+
+      data.macros[0].macros[0].type.should.equal('set');
+      data.macros[0].macros[0].expression.should.equal('$reputation = 4');
+      data.macros[0].macros[0].content.should.equal('');
+
+      data.content.should.equal('this is some text.<<0>>');
+    });
   });
 
   describe('#lexLink', function () {
