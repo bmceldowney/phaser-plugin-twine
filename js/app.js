@@ -19,4 +19,4 @@ function processRawData (rawData) {
 
 module.exports = {
 	processRawData: processRawData
-}
+};

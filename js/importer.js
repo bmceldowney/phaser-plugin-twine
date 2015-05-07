@@ -13,9 +13,9 @@ function build (rawData) {
 
 	return {
 		passages: passages
-	}
+	};
 }
 
 module.exports = {
 	build: build
-}
+};

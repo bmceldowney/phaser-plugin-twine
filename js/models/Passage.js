@@ -2,7 +2,7 @@ var defaultPassage = {
 	id: '',
 	tags: [],
 	content: ''
-}
+};
 
 function get (rawData) {
 	var retval = Object.create(defaultPassage);

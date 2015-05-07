@@ -2,203 +2,212 @@ var chai = require('chai');
 var should = chai.should();
 
 describe('storyLexer', function () {
-  var lexer;
+	var lexer;
 
-  beforeEach(function () {
-    lexer = require('../../js/storyLexer.js');
-  });
+	beforeEach(function () {
+		lexer = require('../../js/storyLexer.js');
+	});
 
-  describe('#analyze', function () {
-    it('should recognize the start of a macro', function should_recognize_the_start_of_a_macro() {
-      var story = "a<<if b is c>>, d<<endif>>";
-      var data = lexer.analyze(story);
-      data.macros.length.should.equal(1);
-      data.macros[0].type.should.equal('if');
-      data.macros[0].expression.should.equal('b is c');
-      data.macros[0].content.should.equal(', d');
-    });
+	describe('#analyze', function () {
+		it('should recognize the start of a macro', function () {
+			var story = "a<<if b is c>>, d<<endif>>";
+			var data = lexer.analyze(story);
+			data.macros.length.should.equal(1);
+			data.macros[0].type.should.equal('if');
+			data.macros[0].expression.should.equal('b is c');
+			data.macros[0].content.should.equal(', d');
+		});
 
-    it('should handle nested macros', function should_handle_nested_macros() {
-      var story = "a <<if b is c>>, d <<if e>> f<<endif>>blartfast on the belfry<<endif>> thing happened <<if aThing>> blarve <<endif>> this too";
-      var data = lexer.analyze(story);
+		it('should handle nested macros', function () {
+			var story = "a <<if b is c>>, d <<if e>> f<<endif>>blartfast on the belfry<<endif>> thing happened <<if aThing>> blarve <<endif>> this too";
+			var data = lexer.analyze(story);
 
-      data.macros.length.should.equal(2);
-      data.macros[0].type.should.equal('if');
-      data.macros[0].expression.should.equal('b is c');
-      data.macros[0].content.should.equal(', d <<0>>blartfast on the belfry');
+			data.macros.length.should.equal(2);
+			data.macros[0].type.should.equal('if');
+			data.macros[0].expression.should.equal('b is c');
+			data.macros[0].content.should.equal(', d <<0>>blartfast on the belfry');
 
-      data.macros[0].macros.length.should.equal(1);
-      data.macros[0].macros[0].type.should.equal('if');
-      data.macros[0].macros[0].expression.should.equal('e');
-      data.macros[0].macros[0].content.should.equal(' f');
+			data.macros[0].macros.length.should.equal(1);
+			data.macros[0].macros[0].type.should.equal('if');
+			data.macros[0].macros[0].expression.should.equal('e');
+			data.macros[0].macros[0].content.should.equal(' f');
 
-      data.content.should.equal('a <<0>> thing happened <<1>> this too');
-    });
+			data.content.should.equal('a <<0>> thing happened <<1>> this too');
+		});
 
-    it('should handle else macros', function should_handle_else_macros() {
-      var story = "the new start <<if blart>>a<<if b is c>>d<<else>>e<<endif>> and some text<<endif>>";
-      var data = lexer.analyze(story);
-      data.macros.length.should.equal(1);
-      data.macros[0].type.should.equal('if');
-      data.macros[0].expression.should.equal('blart');
-      data.macros[0].content.should.equal('a<<0>> and some text');
+		it('should handle else macros', function () {
+			var story = "the new start <<if blart>>a<<if b is c>>d<<else>>e<<endif>> and some text<<endif>>";
+			var data = lexer.analyze(story);
+			data.macros.length.should.equal(1);
+			data.macros[0].type.should.equal('if');
+			data.macros[0].expression.should.equal('blart');
+			data.macros[0].content.should.equal('a<<0>> and some text');
 
-      data.macros[0].macros[0].type.should.equal('if');
-      data.macros[0].macros[0].expression.should.equal('b is c');
-      data.macros[0].macros[0].content.should.equal('d');
+			data.macros[0].macros[0].type.should.equal('if');
+			data.macros[0].macros[0].expression.should.equal('b is c');
+			data.macros[0].macros[0].content.should.equal('d');
 
-      data.macros[0].macros[0].else.length.should.equal(1);
-      data.macros[0].macros[0].else[0].type.should.equal('else');
-      data.macros[0].macros[0].else[0].expression.should.equal('');
-      data.macros[0].macros[0].else[0].content.should.equal('e');
-    });
+			data.macros[0].macros[0].else.length.should.equal(1);
+			data.macros[0].macros[0].else[0].type.should.equal('else');
+			data.macros[0].macros[0].else[0].expression.should.equal('');
+			data.macros[0].macros[0].else[0].content.should.equal('e');
+		});
 
-    it('should handle else if macros', function should_handle_else_if_macros() {
-      var story = "a<<if b is c>>d<<else if e neq 'f'>>g<<endif>>";
-      var data = lexer.analyze(story);
-      data.macros.length.should.equal(1);
-      data.macros[0].type.should.equal('if');
-      data.macros[0].expression.should.equal('b is c');
-      data.macros[0].content.should.equal('d');
+		it('should handle else if macros', function () {
+			var story = "a<<if b is c>>d<<else if e neq 'f'>>g<<endif>>";
+			var data = lexer.analyze(story);
+			data.macros.length.should.equal(1);
+			data.macros[0].type.should.equal('if');
+			data.macros[0].expression.should.equal('b is c');
+			data.macros[0].content.should.equal('d');
 
-      data.macros[0].else.length.should.equal(1);
-      data.macros[0].else[0].type.should.equal('else');
-      data.macros[0].else[0].expression.should.equal("e neq 'f'");
-      data.macros[0].else[0].content.should.equal('g');
-    });
+			data.macros[0].else.length.should.equal(1);
+			data.macros[0].else[0].type.should.equal('else');
+			data.macros[0].else[0].expression.should.equal("e neq 'f'");
+			data.macros[0].else[0].content.should.equal('g');
+		});
 
-    it('should handle elseif macros', function should_handle_elseif_macros() {
-      var story = "a<<if b is c>>d<<elseif e neq 'f'>>g<<endif>>";
-      var data = lexer.analyze(story);
-      data.macros.length.should.equal(1);
-      data.macros[0].type.should.equal('if');
-      data.macros[0].expression.should.equal('b is c');
-      data.macros[0].content.should.equal('d');
+		it('should handle elseif macros', function () {
+			var story = "a<<if b is c>>d<<elseif e neq 'f'>>g<<endif>>";
+			var data = lexer.analyze(story);
+			data.macros.length.should.equal(1);
+			data.macros[0].type.should.equal('if');
+			data.macros[0].expression.should.equal('b is c');
+			data.macros[0].content.should.equal('d');
 
-      data.macros[0].else.length.should.equal(1);
-      data.macros[0].else[0].type.should.equal('else');
-      data.macros[0].else[0].expression.should.equal("e neq 'f'");
-      data.macros[0].else[0].content.should.equal('g');
-    });
+			data.macros[0].else.length.should.equal(1);
+			data.macros[0].else[0].type.should.equal('else');
+			data.macros[0].else[0].expression.should.equal("e neq 'f'");
+			data.macros[0].else[0].content.should.equal('g');
+		});
 
-    it('should handle the > symbol', function () {
-      var story = "a<<if b > c>>d<<elseif e>>f<<elseif g>>h<<else>>j<<endif>>";
-      var data = lexer.analyze(story);
+		it('should handle the > symbol', function () {
+			var story = "a<<if b > c>>d<<elseif e>>f<<elseif g>>h<<else>>j<<endif>>";
+			var data = lexer.analyze(story);
 
-      data.macros[0].content.should.equal('d');
-    })
+			data.macros[0].content.should.equal('d');
+		});
 
-    it('should not add else and endif macros', function () {
-      var story = "a<<if b is c>>d<<elseif e>>f<<endif>>";
-      var data = lexer.analyze(story);
+		it('should not add else and endif macros', function () {
+			var story = "a<<if b is c>>d<<elseif e>>f<<endif>>";
+			var data = lexer.analyze(story);
 
-      should.not.exist(data.macros['endif']);
-      should.not.exist(data.macros['else']);
-    });
+			should.not.exist(data.macros.endif);
+			should.not.exist(data.macros.else);
+		});
 
-    it('should handle links', function () {
-      var story = "a<<if b is c>>d<<elseif e>>f<<endif>>[[link|location]]";
-      var data = lexer.analyze(story);
+		it('should handle links', function () {
+			var story = "a<<if b is c>>d<<elseif e>>f<<endif>>[[link|location]]";
+			var data = lexer.analyze(story);
 
-      data.links.length.should.equal(1);
-      data.links[0].text.should.equal('link');
-      data.links[0].target.should.equal('location');
-    });
+			data.links.length.should.equal(1);
+			data.links[0].text.should.equal('link');
+			data.links[0].target.should.equal('location');
+		});
 
-    it('should handle set macros', function () {
-      var story = 'this is some <<set $reputation = 4>>text.<<if $reputation>> You rock.<<endif>>'
-      var data = lexer.analyze(story);
+		it('should handle set macros', function () {
+			var story = 'this is some <<set $reputation = 4>>text.<<if $reputation>> You rock.<<endif>>';
+			var data = lexer.analyze(story);
 
-      data.macros[0].type.should.equal('set');
-      data.macros[0].expression.should.equal('$reputation = 4');
-      data.macros[0].content.should.equal('');
+			data.macros[0].type.should.equal('set');
+			data.macros[0].expression.should.equal('$reputation = 4');
+			data.macros[0].content.should.equal('');
 
-      data.macros[1].type.should.equal('if');
-      data.macros[1].expression.should.equal('$reputation');
-      data.macros[1].content.should.equal(' You rock.');
+			data.macros[1].type.should.equal('if');
+			data.macros[1].expression.should.equal('$reputation');
+			data.macros[1].content.should.equal(' You rock.');
 
-      data.content.should.equal('this is some <<0>>text.<<1>>');
-    });
+			data.content.should.equal('this is some <<0>>text.<<1>>');
+		});
 
-    it('should handle set macros at the beginning of a passage', function () {
-      var story = '<<set $started = true>>\nHere is the start.\n[[Go on.|go]]';
-      var data = lexer.analyze(story);
+		it('should handle set macros with multiple operations', function () {
+			var story = 'this is some <<set $reputation = 4; $aParty to "is happening">>text.';
+			var data = lexer.analyze(story);
 
-      data.macros[0].type.should.equal('set');
-      data.macros[0].expression.should.equal('$started = true');
-      data.macros[0].content.should.equal('');
-    })
+			data.macros[0].type.should.equal('set');
+			data.macros[0].expression.should.equal('$reputation = 4; $aParty to "is happening"');
+			data.macros[0].content.should.equal('');
+		});
 
-    it('should handle nested set macros', function () {
-      var story = 'this is some text.<<if $reputation>> You<<set $reputation = 4>> rock.<<endif>>'
-      var data = lexer.analyze(story);
+		it('should handle set macros at the beginning of a passage', function () {
+			var story = '<<set $started = true>>\nHere is the start.\n[[Go on.|go]]';
+			var data = lexer.analyze(story);
 
-      data.macros[0].type.should.equal('if');
-      data.macros[0].expression.should.equal('$reputation');
-      data.macros[0].content.should.equal(' You<<0>> rock.');
+			data.macros[0].type.should.equal('set');
+			data.macros[0].expression.should.equal('$started = true');
+			data.macros[0].content.should.equal('');
+		});
 
-      data.macros[0].macros[0].type.should.equal('set');
-      data.macros[0].macros[0].expression.should.equal('$reputation = 4');
-      data.macros[0].macros[0].content.should.equal('');
+		it('should handle nested set macros', function () {
+			var story = 'this is some text.<<if $reputation>> You<<set $reputation = 4>> rock.<<endif>>';
+			var data = lexer.analyze(story);
 
-      data.content.should.equal('this is some text.<<0>>');
-    });
-  });
+			data.macros[0].type.should.equal('if');
+			data.macros[0].expression.should.equal('$reputation');
+			data.macros[0].content.should.equal(' You<<0>> rock.');
 
-  describe('#lexLink', function () {
-    it('should return a valid link object', function () {
-      var story = "This is a story with a [[link|target]] and another [[link2]]";
-      var index = 23;
+			data.macros[0].macros[0].type.should.equal('set');
+			data.macros[0].macros[0].expression.should.equal('$reputation = 4');
+			data.macros[0].macros[0].content.should.equal('');
 
-      var link = lexer.lexLink(story, index);
-      link.startIndex.should.equal(23);
-      link.endIndex.should.equal(37);
-      link.text.should.equal('link');
-      link.target.should.equal('target');
+			data.content.should.equal('this is some text.<<0>>');
+		});
+	});
 
-      index = 51;
-      link = lexer.lexLink(story, index);
-      link.startIndex.should.equal(51);
-      link.endIndex.should.equal(59);
-      link.text.should.equal('link2');
-      link.target.should.equal('link2');
-    })
-  })
+	describe('#lexLink', function () {
+		it('should return a valid link object', function () {
+			var story = "This is a story with a [[link|target]] and another [[link2]]";
+			var index = 23;
 
-  describe('#lexMacro', function () {
-    it('should lex some stuff', function () {
-      var story = "This is a test story with a <<testMacro>>";
-      lexer.lexMacro(story, 28).type.should.equal('testMacro');
+			var link = lexer.lexLink(story, index);
+			link.startIndex.should.equal(23);
+			link.endIndex.should.equal(37);
+			link.text.should.equal('link');
+			link.target.should.equal('target');
 
-      story = "This is a test story with a <<if something is somethingElse>>, dogg <<endif>>";
-      var macro = lexer.lexMacro(story, 28);
-      macro.type.should.equal('if');
-      macro.expression.should.equal('something is somethingElse');
-      macro.startIndex.should.equal(28);
-      macro.endIndex.should.equal(60);
-    })
-  });
+			index = 51;
+			link = lexer.lexLink(story, index);
+			link.startIndex.should.equal(51);
+			link.endIndex.should.equal(59);
+			link.text.should.equal('link2');
+			link.target.should.equal('link2');
+		});
+	});
 
-  describe('#cleanUp', function () {
-    it('should get rid of any non-essential properties', function () {
-      var data = "This content<<if $spotty is 'bockchoy'>><<if $reputation > 4>>\nYou seem like just the type for this sort of thing.\n<<elseif $reputation < 0>>\nOr maybe I'm better off asking someone else...\n<<else>>\nI'm apprehensive, but willing to give you a try.\n<<endif>>This bockchoy is not NEARLY spotty enough.<<endif>>\n\n[[Why can’t you talk to him?|Why]]\n[[What’s it worth to you?|HowMuch]]\n";
-      var lex = lexer.analyze(data);
-      var clean = lexer.cleanUp(lex);
+	describe('#lexMacro', function () {
+		it('should lex some stuff', function () {
+			var story = "This is a test story with a <<testMacro>>";
+			lexer.lexMacro(story, 28).type.should.equal('testMacro');
 
-      clean.macros.forEach(function (macro) {
-        should.not.exist(macro.startIndex);
-        should.not.exist(macro.endIndex);
-        should.not.exist(macro.contentStart);
-      });
-    });
-  })
+			story = "This is a test story with a <<if something is somethingElse>>, dogg <<endif>>";
+			var macro = lexer.lexMacro(story, 28);
+			macro.type.should.equal('if');
+			macro.expression.should.equal('something is somethingElse');
+			macro.startIndex.should.equal(28);
+			macro.endIndex.should.equal(60);
+		});
+	});
 
-  xdescribe('--> PRINT', function temp() {
-    it('OUT -->', function () {
-      var data = "This content<<if $spotty is 'bockchoy'>><<if $reputation > 4>>\nYou seem like just the type for this sort of thing.\n<<elseif $reputation < 0>>\nOr maybe I'm better off asking someone else...\n<<else>>\nI'm apprehensive, but willing to give you a try.\n<<endif>>This bockchoy is not NEARLY spotty enough.<<endif>>\n\n[[Why can’t you talk to him?|Why]]\n[[What’s it worth to you?|HowMuch]]\n";
-      var lex = lexer.analyze(data);
+	describe('#cleanUp', function () {
+		it('should get rid of any non-essential properties', function () {
+			var data = "This content<<if $spotty is 'bockchoy'>><<if $reputation > 4>>\nYou seem like just the type for this sort of thing.\n<<elseif $reputation < 0>>\nOr maybe I'm better off asking someone else...\n<<else>>\nI'm apprehensive, but willing to give you a try.\n<<endif>>This bockchoy is not NEARLY spotty enough.<<endif>>\n\n[[Why can’t you talk to him?|Why]]\n[[What’s it worth to you?|HowMuch]]\n";
+			var lex = lexer.analyze(data);
+			var clean = lexer.cleanUp(lex);
 
-      console.log(JSON.stringify(lex));
-    })
-  });
+			clean.macros.forEach(function (macro) {
+				should.not.exist(macro.startIndex);
+				should.not.exist(macro.endIndex);
+				should.not.exist(macro.contentStart);
+			});
+		});
+	});
+
+	xdescribe('--> PRINT', function temp() {
+		it('OUT -->', function () {
+			var data = "This content<<if $spotty is 'bockchoy'>><<if $reputation > 4>>\nYou seem like just the type for this sort of thing.\n<<elseif $reputation < 0>>\nOr maybe I'm better off asking someone else...\n<<else>>\nI'm apprehensive, but willing to give you a try.\n<<endif>>This bockchoy is not NEARLY spotty enough.<<endif>>\n\n[[Why can’t you talk to him?|Why]]\n[[What’s it worth to you?|HowMuch]]\n";
+			var lex = lexer.analyze(data);
+
+			console.log(JSON.stringify(lex));
+		});
+	});
 });

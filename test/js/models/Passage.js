@@ -30,7 +30,7 @@ describe('passage', function () {
 			passage.tags[5].should.equal('<tag>');
 			passage.tags.length.should.equal(6);
 			passage.content.should.equal(content);
-		})
+		});
 
 		it('should handle passages with on tags', function () {
 			var passage = passages.get(noTags);
@@ -38,6 +38,6 @@ describe('passage', function () {
 			passage.id.should.equal('Start');
 			passage.tags.length.should.equal(0);
 			passage.content.should.equal(noTagsContent);
-		})
-	})
+		});
+	});
 });
