@@ -1,6 +1,6 @@
 {
-  "name": "phaser-plugin-twine",
-  "version": "0.0.0",
+  "name": "pt-twee-converter",
+  "version": "0.0.1",
   "description": "A plugin that integrates twine with phaser",
   "main": "index.js",
   "scripts": {
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:bmceldowney/phaser-plugin-twine.git"
+    "url": "git@github.com:bmceldowney/pt-twee-converter.git"
   },
   "author": "Ben McEldowney",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bmceldowney/phaser-plugin-twine/issues"
+    "url": "https://github.com/bmceldowney/pt-twee-converter/issues"
   },
-  "homepage": "https://github.com/bmceldowney/phaser-plugin-twine",
+  "homepage": "https://github.com/bmceldowney/pt-twee-converter",
   "devDependencies": {
     "chai": "^1.10.0",
     "istanbul": "^0.3.13",
