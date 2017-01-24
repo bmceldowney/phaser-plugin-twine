@@ -1,3 +1,5 @@
+#PlotTwister Twee converter
+
 This is a converter for twee source code to the Plot Twister json format.
 Currently converts twine stories written with twine 1.42 and then exported to twee source code.
 
